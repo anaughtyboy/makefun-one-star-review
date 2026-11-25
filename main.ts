@@ -14,6 +14,9 @@ if (review.trim().length === 0) {
 if (/[\r\n]/.test(review)) {
   throw new Error("review must be a single line");
 }
+if (/[\u0000-\u001f\u007f]/.test(review)) {
+  throw new Error("review must not contain control characters");
+}
 if (review !== review.trim()) {
   throw new Error("review must not start or end with whitespace");
 }
@@ -26,5 +29,8 @@ writeFileSync(outPath, review, "utf8");
 const roundTrip = readFileSync(outPath, "utf8");
 if (roundTrip !== review) {
   throw new Error("entry.txt does not match the review byte for byte");
+}
+if (roundTrip.endsWith("\n")) {
+  throw new Error("entry.txt must not end with a newline");
 }
 console.log(`wrote ${chars} characters to ${outPath}`);
